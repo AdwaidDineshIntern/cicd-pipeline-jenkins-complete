@@ -1,8 +1,10 @@
 pipeline {
     agent any
     environment {
-        //be sure to replace "bhavukm" with your own Docker Hub username
-        DOCKER_IMAGE_NAME = "bhavukm/train-schedule"
+        DOCKER_IMAGE_NAME = "adwaiddinesh/train-schedule"
+        // Set Minikube Docker environment
+        DOCKER_HOST = "tcp://$(minikube ip):2376"
+        DOCKER_TLS_CERTDIR = ""
     }
     stages {
         stage('Build') {
@@ -18,6 +20,10 @@ pipeline {
             }
             steps {
                 script {
+                    // Set the environment variables for Docker
+                    sh 'eval $(minikube docker-env)'
+
+                    // Build the Docker image
                     app = docker.build(DOCKER_IMAGE_NAME)
                     app.inside {
                         sh 'echo Hello, World!'
